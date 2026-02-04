@@ -1,0 +1,20 @@
+:root {
+  --bg-light: #f8f9fa;
+  --text-light: #2d3436;
+  --card-light: #ffffff;
+
+  --bg-dark: #121212;
+  --text-dark: #e0e0e0;
+  --card-dark: #1e1e1e;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
