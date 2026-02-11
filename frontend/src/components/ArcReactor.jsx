@@ -37,6 +37,7 @@ const ArcReactor = () => {
       const scalePulse = 1 + Math.sin(time * 5) * 0.02;
       outerRingRef.current.scale.set(scalePulse, scalePulse, scalePulse);
     }
+    
   });
 
   // --- NANO-TECH MATERIALS ---
@@ -129,12 +130,12 @@ const ArcReactor = () => {
         </group>
 
         {/* --- LIGHTS & PARTICLES --- */}
-        <pointLight distance={5} decay={1} color={neonBlue} intensity={booted ? 3 : 0} />
+        <pointLight distance={5} decay={1} color={neonBlue} intensity={booted ? 1 : 0} />
 
         {/* High-speed energy trail particles */}
         {booted && (
           <Sparkles
-            count={100}
+            count={50}
             scale={3.5}
             size={4}
             speed={2}

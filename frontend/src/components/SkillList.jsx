@@ -1,139 +1,97 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Plus, Search, BookOpen, Download } from 'lucide-react';
+import { Plus, BookOpen, CheckCircle } from 'lucide-react';
 
-const SkillList = () => {
+// 1. Accept onUserUpdate as a prop
+const SkillList = ({ currentUser, onUserUpdate }) => {
   const [skills, setSkills] = useState([]);
-  const [newSkill, setNewSkill] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [newSkillName, setNewSkillName] = useState("");
 
+  // Load available skills (e.g. "Java", "Football")
   useEffect(() => {
-    fetchSkills();
+    axios.get('/api/skills').then(res => setSkills(res.data));
   }, []);
 
-  const fetchSkills = () => {
-    axios.get('/api/skills').then(res => setSkills(res.data));
+  // --- ADD NEW SKILL TO DATABASE ---
+  const handleCreateSkill = () => {
+    if (!newSkillName) return;
+    axios.post('/api/skills', { skillName: newSkillName })
+      .then(res => {
+        setSkills([...skills, res.data]); // Update the list
+        setNewSkillName("");
+      });
   };
 
-  const handleAddSkill = (e) => {
-    e.preventDefault();
-    if (!newSkill) return;
-    axios.post('/api/skills', { SkillName: newSkill }).then(res => {
-      setSkills([...skills, res.data]);
-      setNewSkill("");
-    });
+  // --- ADD SKILL TO YOUR PROFILE ---
+  const handleAddToProfile = (skillId) => {
+    if (!currentUser) return;
+
+    // Call the PUT endpoint
+    axios.put(`/api/users/${currentUser.id}/skills/${skillId}`)
+      .then(res => {
+        // res.data is the UPDATED User object from the backend
+        alert("Skill Added Successfully!");
+        
+        // 2. IMPORTANT: Update the App state instantly!
+        onUserUpdate(res.data); 
+      })
+      .catch(err => alert("Failed to add skill."));
   };
 
-  const handleClaimSkill = (skillId) => {
-    axios.put(`/api/users/1/skills/${skillId}`).then(() => {
-      alert("Success! You have added this skill to your profile.");
-    });
+  // Helper: Check if user already has the skill
+  const hasSkill = (skillId) => {
+    // SAFETY CHECK: If currentUser or skills is missing, return false (don't crash)
+    if (!currentUser || !currentUser.skills) return false;
+    
+    return currentUser.skills.some(s => s.id === skillId);
   };
-
-  const filteredSkills = skills.filter(s =>
-    (s.SkillName || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
-    <div style={{
-      background: '#1e293b',
-      border: '1px solid #334155',
-      borderRadius: '12px',
-      padding: '24px',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-    }}>
-      {/* SEARCH BAR */}
-      <div style={{ position: 'relative', marginBottom: '24px' }}>
-        <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-        <input
-          type="text"
-          placeholder="Search for a skill..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '10px 10px 10px 40px',
-            borderRadius: '8px',
-            border: '1px solid #475569',
-            background: '#0f172a',
-            color: 'white',
-            outline: 'none',
-            fontSize: '0.9rem'
-          }}
+    <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '24px' }}>
+      
+      {/* Create New Skill Input */}
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        <input 
+          type="text" 
+          placeholder="Type a new skill (e.g. Yoga)..." 
+          value={newSkillName}
+          onChange={(e) => setNewSkillName(e.target.value)}
+          style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #475569', background: '#0f172a', color: 'white' }}
         />
+        <button onClick={handleCreateSkill} style={{ background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', padding: '0 20px', cursor: 'pointer', fontWeight: 'bold' }}>
+          + Add
+        </button>
       </div>
 
-      {/* ADD SKILL FORM */}
-      <form onSubmit={handleAddSkill} style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
-        <input
-          type="text"
-          value={newSkill}
-          onChange={(e) => setNewSkill(e.target.value)}
-          placeholder="Type a new skill (e.g. Java, Yoga)..."
-          style={{
-            flex: 1,
-            padding: '10px 14px',
-            borderRadius: '8px',
-            border: '1px solid #3b82f6',
-            background: 'rgba(59, 130, 246, 0.1)',
-            color: 'white',
-            outline: 'none',
-            fontSize: '0.9rem'
-          }}
-        />
-        <button type="submit" style={{
-          background: '#3b82f6',
-          color: 'white',
-          border: 'none',
-          borderRadius: '8px',
-          padding: '0 20px',
-          cursor: 'pointer',
-          fontWeight: '600',
-          fontSize: '0.9rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px'
-        }}>
-          <Plus size={18} /> Add
-        </button>
-      </form>
-
-      {/* SKILL LIST */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '400px', overflowY: 'auto' }}>
-        {filteredSkills.map(skill => (
-          <div key={skill.id} style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            padding: '12px 16px', background: '#334155', borderRadius: '8px',
-            transition: '0.2s'
+      {/* List of Skills */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {skills.map(skill => (
+          <div key={skill.id} style={{ 
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+            padding: '12px', background: '#0f172a', borderRadius: '8px', border: '1px solid #334155' 
           }}>
-            <span style={{ fontWeight: '500', color: '#e2e8f0', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <BookOpen size={16} color="#94a3b8"/> {skill.SkillName}
-            </span>
-            <button
-              onClick={() => handleClaimSkill(skill.id)}
-              style={{
-                background: 'transparent',
-                border: '1px solid #3b82f6',
-                color: '#60a5fa',
-                padding: '6px 12px',
-                borderRadius: '6px',
-                fontSize: '0.8rem',
-                cursor: 'pointer',
-                fontWeight: '500',
-                display: 'flex', alignItems: 'center', gap: '6px'
-              }}
-              onMouseOver={(e) => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.1)'}
-              onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
-            >
-              Add to Profile
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <BookOpen size={16} color="#94a3b8" />
+              <span style={{ color: '#e2e8f0' }}>{skill.skillName}</span>
+            </div>
+
+            {hasSkill(skill.id) ? (
+              <span style={{ fontSize: '0.8rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <CheckCircle size={14} /> Added
+              </span>
+            ) : (
+              <button 
+                onClick={() => handleAddToProfile(skill.id)}
+                style={{ 
+                  background: 'transparent', border: '1px solid #3b82f6', color: '#60a5fa', 
+                  padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' 
+                }}
+              >
+                Add to Profile
+              </button>
+            )}
           </div>
         ))}
-        {filteredSkills.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '20px', color: '#64748b', fontSize: '0.9rem' }}>
-            No skills found. Try adding one above!
-          </div>
-        )}
       </div>
     </div>
   );

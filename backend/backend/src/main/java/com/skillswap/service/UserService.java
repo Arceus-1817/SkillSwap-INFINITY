@@ -38,4 +38,20 @@ public class UserService {
         // 3. Save the user back to the database
         return userRepository.save(user);
     }
+
+    public User loginOrRegister(String email) {
+        // 1. Check if user exists
+        return userRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    // 2. If NOT found, create a new one
+                    User newUser = new User();
+                    newUser.setEmail(email);
+
+                    // Simple hack: use "aryaman" as name if email is "aryaman@isb.edu"
+                    String derivedName = email.split("@")[0];
+                    newUser.setName(derivedName);
+
+                    return userRepository.save(newUser);
+                });
+    }
 }
