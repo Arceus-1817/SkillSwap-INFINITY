@@ -18,3 +18,14 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* FORCE DARK AUTOFILL FOR STARK TECH UI */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px rgba(0, 10, 20, 0.95) inset !important;
+    -webkit-text-fill-color: #00f3ff !important;
+    caret-color: #00f3ff !important;
+    transition: background-color 5000s ease-in-out 0s;
+}

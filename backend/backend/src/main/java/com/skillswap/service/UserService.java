@@ -25,18 +25,20 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    // 🔥 ADD THIS MISSING METHOD 🔥
     public User addSkillToUser(Long userId, Long skillId) {
-        // 1. Fetch the user and skill objects from the database
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
         Skills skill = skillsRepository.findById(skillId)
                 .orElseThrow(() -> new RuntimeException("Skill not found"));
 
-        // 2. Add the skill to the user's list
-        user.getSkills().add(skill);
-
-        // 3. Save the user back to the database
-        return userRepository.save(user);
+        // Add skill only if they don't have it yet
+        if (!user.getSkills().contains(skill)) {
+            user.getSkills().add(skill);
+            return userRepository.save(user); // This saves the link in "user_skills" table
+        }
+        return user;
     }
 
     public User loginOrRegister(String email) {

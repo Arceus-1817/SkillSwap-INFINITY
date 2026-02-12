@@ -13,10 +13,12 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
     "axios": "^1.13.4",
-    "framer-motion": "^12.31.0",
+    "framer-motion": "^12.34.0",
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "sockjs-client": "^1.6.1",
+    "stompjs": "^2.3.3",
     "three": "^0.182.0"
   },
   "devDependencies": {
