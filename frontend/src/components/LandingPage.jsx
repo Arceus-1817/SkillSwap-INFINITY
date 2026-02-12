@@ -9,7 +9,7 @@ const LandingPage = ({ onLoginSuccess }) => {
   const [logs, setLogs] = useState([]);
 
   // Your chosen Iron Man outline image
-  const IRON_MAN_IMG = "https://i.pinimg.com/736x/60/10/1b/60101bb9fb1062503615ca3972ef960a.jpg";
+  const IRON_MAN_IMG = "/hero-image.jpg";
 
   const startBootSequence = () => {
     setBootStatus('booting');
