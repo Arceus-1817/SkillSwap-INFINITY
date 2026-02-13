@@ -8,7 +8,10 @@ import NotificationCenter from "./components/NotificationCenter";
 import Profile from "./components/Profile";
 import { LayoutDashboard, LogOut } from "lucide-react";
 import Chat from "./components/Chat";
+import axios from 'axios';
 
+// This tells Axios to use the cloud URL if it exists, otherwise use localhost
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || "https://your-future-backend-url.onrender.com";
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [view, setView] = useState("landing"); // 'landing', 'auth', 'dashboard', 'profile'
