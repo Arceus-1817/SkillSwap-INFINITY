@@ -34,7 +34,7 @@ public class EmailService {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             // Automatically uses the email from your Render environment
-            message.setFrom(System.getenv("MAIL_USER"));
+            message.setFrom("patil.shreyansh.18@gmail.com");
             message.setTo(to);
             message.setSubject(subject);
             message.setText(body);
