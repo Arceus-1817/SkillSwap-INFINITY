@@ -19,7 +19,7 @@ public class SessionScheduler {
     private EmailService emailService;
 
     // Runs every 60 seconds
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(initialDelay = 120000,fixedRate = 60000)
     public void checkUpcomingSessions() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime fifteenMinutesLater = now.plusMinutes(15);
